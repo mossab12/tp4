@@ -11,6 +11,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+
+import com.telly.dao.User;
+import com.telly.service.UserService;
+
 @Controller
 public class UserController {
 
@@ -25,6 +29,29 @@ public class UserController {
 		return "loggedout";
 	}
 
+	@RequestMapping("/createaccount")
+	public String createAccount(Model model, Principal principal) {
+		
+		model.addAttribute("user", new User());
+		
+		return "createaccount";
+	}
+
+	@RequestMapping(value = "/createuser", method = RequestMethod.POST)
+	public String createUser(@Validated(FormValidationGroup.class) User user, BindingResult result) {
+		
+		if(result.hasErrors()) {
+			return "createaccount";
+		}
+		
+		user.setAuthority("ROLE_USER");
+		user.setEnabled(true);
+
+		userService.create(user);
+		
+		return "home";
+
+	}
 }
 
 
